@@ -1,0 +1,51 @@
+input AMPLIFY {
+  globalAuthRule: AuthRule = {allow: public}
+}
+
+type Senior @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  dob: AWSDate!
+  gender: String!
+  photo: String
+  address: String
+  phoneNumber: String
+  email: String
+  medicalRecords: [MedicalRecord] @hasMany(indexName: "bySenior", fields: ["id"])
+  primaryDoctor: String
+  medicalConditions: String
+  medications: [String]
+  allergies: [String]
+  emergencyContactName: String
+  emergencyContactPhone: String
+  emergencyContactRelation: String
+  livingSituation: String
+  activitiesInterest: [String]
+  dietaryPreferences: String
+  mobility: String
+  servicesReceived: [String]
+  serviceProvider: String
+  powerOfAttorney: String
+  insuranceDetails: String
+  income: Int
+  notes: String
+  files: [File] @hasMany(indexName: "bySenior", fields: ["id"])
+}
+
+type MedicalRecord @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  seniorId: ID! @index(name: "bySenior")
+  senior: Senior @belongsTo(fields: ["seniorId"])
+  recordDetails: String
+}
+
+type File @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  seniorId: ID! @index(name: "bySenior")
+  senior: Senior @belongsTo(fields: ["seniorId"])
+  fileName: String!
+  filePath: String!
+  description: String
+  tags: [String]
+}

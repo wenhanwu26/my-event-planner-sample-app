@@ -3,7 +3,7 @@
 <script setup lang="ts">
 
 import AppBar from '@/components/AppBar.vue';
-import EventsList from '@/components/EventsList.vue';
+import EventsList from '@/components/SeniorList.vue';
 import BottomNavBar from './components/BottomNavBar.vue';
 
 </script>

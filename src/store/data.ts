@@ -1,52 +1,69 @@
-// This file defines a Pinia store that manages the data for the events booking app. 
-// It has state for rooms and events data. 
-// It has actions to initialize mock data, fetch real data, and book tickets for a student by calling the bookTicket method on the EventDetails model.
-// This store manages data locally on the client side right now, but integration with a cloud database is required.
-
 import { defineStore } from 'pinia';
-import { Booking, Room } from '@/models/Room';
-import EventDetails from '@/models/EventDetails';
 
 // For creating testing/mock data
-import { generateMockData, upLoadMockData } from './mock/mockGeneration';
+import {generateSeniors, upLoadMockData} from './mock/mockGeneration';
 
-// TODO: Add Amplify GraphQL Imports 
+// Add Amplify GraphQL Imports
+import { listSeniors, listMedicalRecords } from '@/graphql/queries'
+import { deleteSenior, deleteMedicalRecord, createSenior, createMedicalRecord, updateSenior } from '@/graphql/mutations';
+import { generateClient } from 'aws-amplify/api';
+import Senior from "@/models/Senior";
+import MedicalRecord from "@/models/MedicalRecord";
+
+// Create GraphQL API client
+const apiClient = generateClient();
+
 
 export const useDataStore = defineStore('data', {
   state: () => {
     return {
-      rooms: [] as Room[],
-      events: [] as EventDetails[],      
+      seniors: [] as Senior[],
+      medicalRecords: [] as MedicalRecord[],
     };
   },
   actions: {
     async initMockData() {
-      console.log("Generating Mock Data");
-      const mockData = generateMockData();
-      this.rooms = mockData.rooms;
-      this.events = mockData.events;
+      //console.log("Generating Mock Data");
+      this.seniors = generateSeniors(10);
     },
 
     async fetchData() {
-      // TODO: Add cloud service to get 'real' data
-      this.initMockData();
+      const dbSeniors = await apiClient.graphql({ query: listSeniors });
+      this.seniors = dbSeniors.data.listSeniors.items.map(senior => {
+        //console.log("fetching "+senior.id);
+        return new Senior(senior.id,senior.firstName,senior.lastName, senior.dob,senior.gender,senior.photo, senior.address, senior.phoneNumber, senior.email, senior.servicesReceived);
+      });
+
     },
 
-    async upLoadData() {      
-      upLoadMockData(); 
-    },    
+    async upLoadData() {
+      upLoadMockData();
+    },
 
-    // Book ticket takes in a event id (number) and a student_id string parameter and calls bookTicket(student_id: string) on the event item in events array
-    // This happens in the client and does not relect in the data other clients have - it is all local. 
-    async bookTicket(eventId: string, studentId: string) {
-      const event: EventDetails = this.events.find(e => e.id === eventId) as EventDetails;
-      if (event) {
-        if (event.total_tickets > event.tickets.length) {
-          event.bookTicket(studentId);
-          // TODO: Add Amplify changes so DynamoDB is updated too
-          
-        }
+    async updateSenior(senior) {
+      try {
+        const response = await apiClient.graphql({
+          query: updateSenior,  // Ensure this is your update GraphQL mutation
+          variables: {
+            input: {
+              id: senior.id,
+              firstName: senior.firstName,
+              lastName: senior.lastName,
+              dob: senior.dob,
+              gender: senior.gender,
+              photo: senior.photo,
+              address: senior.address,
+              phoneNumber: senior.phoneNumber,
+              email: senior.email,
+              servicesReceived: senior.servicesReceived,
+              files: senior.files,
+            }
+          }
+        });
+        console.log('Senior updated successfully', response);
+      } catch (error) {
+        console.log('Error updating senior', error);
       }
-    },
-  },
+    }
+  }
 });

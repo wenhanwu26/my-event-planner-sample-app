@@ -1,6 +1,6 @@
-<!-- This component displays an authentication dialog overlay. 
+<!-- This component displays an authentication dialog overlay.
      It uses the injected authDialogState to determine whether to show the dialog.
-     When shown, the dialog contains a warning message that authentication has not been implemented yet, along with a button to close the dialog. 
+     When shown, the dialog contains a warning message that authentication has not been implemented yet, along with a button to close the dialog.
 -->
 
 <script setup lang="ts">
@@ -11,6 +11,12 @@ import { signOut } from 'aws-amplify/auth'
 
 import { Authenticator } from "@aws-amplify/ui-vue";
 import "@aws-amplify/ui-vue/styles.css";
+
+import { Amplify } from 'aws-amplify';
+import awsconfig from '../aws-exports';
+
+Amplify.configure(awsconfig);
+
 
 const authDialogSignOutState = inject<DialogState>('authDialogSignOutState', { showDialog: false });
 const authDialogSignInState = inject<DialogState>('authDialogSignInState', { showDialog: false });
@@ -23,12 +29,12 @@ function closeDialog() {
 }
 
 function signIn() {
-    signOut();
     authStore.userAuthenticated = true;
     authDialogSignInState.showDialog = false;
 }
 
 function signOutUser() {
+    signOut();
     authStore.userAuthenticated = false;
     authDialogSignOutState.showDialog = false;
 }
@@ -40,7 +46,7 @@ function signOutUser() {
             <template v-slot="{ user }">
                 {{ signIn() }}
             </template>
-        </authenticator>        
+        </authenticator>
     </v-dialog>
     <v-dialog v-model="authDialogSignOutState.showDialog" width="unset" transition="dialog-top-transition">
         <v-card title="Sign Out?" color="warning">

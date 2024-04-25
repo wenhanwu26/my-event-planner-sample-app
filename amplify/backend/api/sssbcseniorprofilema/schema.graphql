@@ -1,0 +1,38 @@
+type Senior @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  dob: AWSDate!
+  gender: String!
+  photo: String
+  address: String
+  phoneNumber: String
+  email: String
+  primaryDoctor: String
+  medicalConditions: String
+  medications: [String]
+  allergies: [String]
+  emergencyContactName: String
+  emergencyContactPhone: String
+  emergencyContactRelation: String
+  livingSituation: String
+  activitiesInterest: [String]
+  dietaryPreferences: String
+  mobility: String
+  servicesReceived: [String]
+  serviceProvider: String
+  powerOfAttorney: String
+  insuranceDetails: String
+  income: Int
+  notes: String
+  files: [File]
+}
+
+type File {
+  id: ID!
+  fileName: String!
+  filePath: String!
+  description: String
+  tags: [String]
+}
+ 

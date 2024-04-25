@@ -1,6 +1,6 @@
-<!-- 
- This component defines the top app bar navigation for the app. 
- It includes the app title and theme toggle, help info dialog, 
+<!--
+ This component defines the top app bar navigation for the app.
+ It includes the app title and theme toggle, help info dialog,
  and user authentication handling.
  The main functionality includes:
  - Toggling between light and dark themes
@@ -33,14 +33,15 @@ function toggleAboutApp() {
 const auth = useAuthStore();
 const userSignedIn = computed(() => auth.userAuthenticated);
 onMounted(() => {
-    auth.checkPreviousUserSignedIn(); 
+    auth.checkPreviousUserSignedIn();
 });
-  
+
 // auth Dialog
 const authDialogSignOutState: DialogState = reactive({ showDialog: false });
 const authDialogSignInState: DialogState = reactive({ showDialog: false });
 provide('authDialogSignOutState', authDialogSignOutState);
 provide('authDialogSignInState', authDialogSignInState);
+
 
 function showSignIn() {
     authDialogSignInState.showDialog = true;
@@ -55,14 +56,9 @@ function showSignOut() {
 <template>
     <v-app-bar app permanent fixed>
         <v-app-bar-title class="text-h5">
-            <strong>MUSSEL</strong>
+            <strong>Senior Care Central (SSSBC)</strong>
             <div class="text-subtitle-1">
-                <strong>M</strong>y
-                <strong>U</strong>niversity's
-                <strong>S</strong>ports &
-                <strong>S</strong>ocial
-                <strong>E</strong>vents
-                <strong>L</strong>ist
+              Senior Profile Management System for Senior Services Society of British Columbia
             </div>
         </v-app-bar-title>
         <v-app-bar-nav-icon>
